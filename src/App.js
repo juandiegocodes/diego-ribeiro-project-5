@@ -7,16 +7,23 @@ class App extends Component {
     super()
     this.state = {
       gameStart: false,
+      dealerWin: false,
+      userWin:false,
+      tie:false,
       deckId: "",
       userdeckValue: 0,
       dealerdeckValue: 0,
       userHandUrls: [],
-      dealerHandUrls:[]
+      dealerHandUrls:[],
+      userAceCounter:0,
+      dealerAceCounter:0,
+      chips:100
     }
   }
 
   componentDidMount() {
     console.log('did mount');
+
   }
 
   newDeck =() => {
@@ -43,21 +50,14 @@ class App extends Component {
       url:`https://deckofcardsapi.com/api/deck/${id}/draw/`,
       responseType: 'json',
       params:{
-        count:2
+        count:1
       }
     }).then((res)=>{
-      console.log(res);
       let dealerCard1 = res.data.cards[0].value;
-      let dealerCard2 = res.data.cards[1].value;
       this.pushDealerUrl(res.data.cards[0].image);
-      this.pushDealerUrl(res.data.cards[1].image);
-      dealerCard1 = parseInt(this.filterCard(dealerCard1))
-      dealerCard2 = parseInt(this.filterCard(dealerCard2))
-      console.log(this.filterCard(dealerCard1));
-      console.log(this.filterCard(dealerCard2));
-      console.log(this.state.dealerHandUrls);
+      dealerCard1 = parseInt(this.dealerFilterCard(dealerCard1))
       this.setState({
-        dealerdeckValue: this.filterCard(dealerCard1) + this.filterCard(dealerCard2)
+        dealerdeckValue: this.dealerFilterCard(dealerCard1)
       })
     });
   }
@@ -71,25 +71,45 @@ class App extends Component {
         count:2
       }
     }).then((res)=>{
-      console.log(res);
       let userCard1 = res.data.cards[0].value;
       let userCard2 = res.data.cards[1].value;
       this.pushUserUrl(res.data.cards[0].image);
       this.pushUserUrl(res.data.cards[1].image);
-      userCard1 = parseInt(this.filterCard(userCard1));
-      userCard2 = parseInt(this.filterCard(userCard2));
-      console.log(this.filterCard(userCard1));
-      console.log(this.filterCard(userCard2));
-      console.log(this.state.userHandUrls);
+      userCard1 = parseInt(this.userFilterCard(userCard1));
+      userCard2 = parseInt(this.userFilterCard(userCard2));
       this.setState({
         userdeckValue: userCard1 + userCard2
       })
+      if(this.state.userdeckValue ===21){
+        this.stay()
+      }
     });
   }
 
-  filterCard = (value) => {
-    if (value === "QUEEN" || value === "KING" || value === "JACK" || value=== "ACE") {
+  dealerFilterCard = (value) => {
+    if (value === "QUEEN" || value === "KING" || value === "JACK") {
       return 10
+    }
+    else if (value=== "ACE") {
+      this.setState({
+        dealerAceCounter: this.state.dealerAceCounter + 10
+      });
+      console.log(this.state.dealerAceCounter);
+      return 11
+    }
+    else return value
+  }
+
+  userFilterCard = (value) => {
+    if (value === "QUEEN" || value === "KING" || value === "JACK") {
+      return 10
+    }
+    else if (value=== "ACE") {
+      this.setState({
+        userAceCounter: this.state.userAceCounter + 10
+      });
+      console.log(this.state.userAceCounter);
+      return 11
     }
     else return value
   }
@@ -109,9 +129,32 @@ class App extends Component {
     })
   }
 
-  requestCard = (id) => {
+  userRequestCard = (id) => {
+    if(this.state.userdeckValue ===21){
+      this.stay()
+    }
+    else {
+    axios({
+      method: 'get',
+      url:`https://deckofcardsapi.com/api/deck/${id}/draw/`,
+      responseType: 'json',
+      params:{
+        count:1
+      }
+      }).then((res)=>{
+        let userCard1 = res.data.cards[0].value;
+        this.pushUserUrl(res.data.cards[0].image);
+        userCard1 = parseInt(this.userFilterCard(userCard1));
+        this.setState({
+          userdeckValue: this.state.userdeckValue +  userCard1
+        })
+        console.log(this.state.userdeckValue);
+        this.checkdeckValue()
+      });
+    }
+  }
 
-
+  dealerRequestCard = (id) => {
     axios({
       method: 'get',
       url:`https://deckofcardsapi.com/api/deck/${id}/draw/`,
@@ -120,15 +163,81 @@ class App extends Component {
         count:1
       }
     }).then((res)=>{
-      let userCard1 = res.data.cards[0].value;
-      this.pushUserUrl(res.data.cards[0].image);
-      userCard1 = parseInt(this.filterCard(userCard1));
-      console.log(this.state.userHandUrls);
+      let dealerCard1 = res.data.cards[0].value;
+      this.pushDealerUrl(res.data.cards[0].image);
+      dealerCard1 = parseInt(this.dealerFilterCard(dealerCard1));
       this.setState({
-        userdeckValue: this.state.userdeckValue +  userCard1
+        dealerdeckValue: this.state.dealerdeckValue +  dealerCard1
       })
-      console.log(this.state.userdeckValue);
+      console.log(this.state.dealerdeckValue);
+      if(this.state.dealerdeckValue < this.state.userdeckValue && this.state.dealerdeckValue < 21) {
+        this.dealerRequestCard(this.state.deckId);
+      }
+      else {
+        this.checkdeckValue();
+      }
     });
+  }
+
+  checkdeckValue = () => {
+    console.log("running check");
+    console.log("acecounter",this.state.userAceCounter);
+    if(this.state.userdeckValue >21) {
+      if(this.state.userAceCounter > 0) {
+        console.log("is happening");
+        this.setState({
+          userdeckValue: this.state.userdeckValue - this.state.userAceCounter,
+          userAceCounter: 0
+        })
+        console.log("newuserdeck alue",this.state.userdeckValue );
+        this.checkdeckValue();
+      }
+      else {
+      this.setState({
+        dealerWin: true
+      })
+      console.log("dealer win");
+      }
+    }
+    else if(this.state.dealerdeckValue === 21 && this.state.userdeckValue === 21) {
+      this.setState({
+        tie: true
+      })
+      console.log("tie");
+    }
+    else if(this.state.dealerdeckValue === this.state.userdeckValue) {
+      this.setState({
+        tie: true
+      })
+      console.log("tie");
+    }
+    else if(this.state.dealerdeckValue >21) {
+      if(this.state.dealerAceCounter > 0) {
+        console.log("is happening");
+        this.setState({
+          dealerdeckValue: this.state.dealerdeckValue - this.state.dealerAceCounter,
+          dealerAceCounter: 0
+        })
+        console.log("newuserdeck alue",this.state.dealerdeckValue );
+        this.dealerRequestCard(this.state.deckId)
+        this.checkdeckValue();
+      }
+      else {
+      this.setState({
+        dealerWin: true
+      })
+      console.log("user win");
+      }
+    }
+    else if (this.state.dealerdeckValue > this.state.userdeckValue){
+      this.setState({
+        dealerWin: true
+      })
+      console.log("dealer win");
+    }
+    else if (this.state.userdeckValue === 21 && this.state.dealerdeckValue < 21) {
+      this.dealerRequestCard(this.state.deckId)
+    }
   }
 
   startButton = () => {
@@ -136,11 +245,14 @@ class App extends Component {
     this.setState({
       gameStart: true
     })
+    this.checkdeckValue();
   }
 
-  checkdeckValue = () => {
-    
+  stay = () => {
+      this.checkdeckValue()
+      this.dealerRequestCard(this.state.deckId)
   }
+
 
   render() {
     return (
@@ -148,16 +260,22 @@ class App extends Component {
         <div className="dealerHand">
         {this.state.dealerHandUrls.map((url,key)=>{
             return (
-              <img src={url} key={key} />             )
+              <img src={url} key={key} alt="poker card" />             )
           })}
         </div>
         <div className="userHand">
           {this.state.userHandUrls.map((url,key)=>{
             return (
-              <img src={url} key={key}/>             )
+              <img src={url} key={key} alt="poker card"/>             )
           })}
         </div>
-        {this.state.gameStart ? <button onClick={()=>{this.requestCard(this.state.deckId)}}> Request New Card </button>: <button onClick={this.startButton}> Start</button>}
+        {this.state.gameStart ?
+          <div> 
+             <button onClick={()=>{this.userRequestCard(this.state.deckId)}}> Request New Card </button>
+             <button onClick={()=>{this.stay()}}> Stay </button>
+          </div>
+           : 
+           <button onClick={this.startButton}> Start</button>}
       </div>
     );
   }

@@ -6,8 +6,16 @@ article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary
 
 .visuallyHidden:not(:focus):not(:active) { position: absolute; width: 1px; height: 1px; margin: -1px;border: 0;padding: 0;white-space: nowrap;clip-path: inset(100%);clip: rect(00 0 0);overflow: hidden;}
 
+@import url(https://fonts.googleapis.com/css?family=Monoton);
+
+body{
+  background: url(./resources/tableBackground.png);
+  background-size: cover;
+}
 .App {
   text-align: center;
+  height: 100%;
+  width: 100%;
 }
 
 nav {
@@ -18,4 +26,107 @@ nav {
 
 nav div {
   padding-right: 3rem;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+h1{
+  font-family: 'Monoton', cursive;
+  color: #b92e34;
+  font-size: 10rem;
+  animation: neon 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes neon {
+  from {
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px rgb(255, 17, 37), 0 0 70px #ff2631, 0 0 80px rgb(255, 17, 37), 0 0 100px rgb(255, 17, 37), 0 0 150px rgb(255, 17, 37);
+  }
+  to {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px rgb(255, 17, 37), 0 0 35px rgb(255, 17, 37), 0 0 40px rgb(255, 17, 37), 0 0 50px rgb(255, 17, 37), 0 0 75px white;
+  }
+}
+
+input {
+  border: none;
+  border-radius: 5px;
+  font-size: 2rem;
+  text-align: center;
+}
+
+button {
+    width: 6rem;
+    height: 6rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 5.3333333333rem;
+    text-align: center;
+    color: rgb(255, 17, 37);
+    background: #FFF;
+    border: 0.3333333333rem dashed rgb(255, 17, 37);
+    border-radius: 6rem;
+    transition: all linear 0.2s;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
+    margin: 2rem 2rem 2rem 0;
+}
+
+/* gameboard */
+.App {
+  height: 100vh;
+}
+
+nav{
+  color: white;
+  font-size: 2rem;
+}
+
+nav p {
+  margin: 15% 0 0 0;
+}
+
+img {
+  width: 100%;
+}
+.playing {
+  display: flex;
+}
+.cards {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+figure {
+  width: 185px;
+}
+
+.dealerHand {
+  margin-bottom: 5%;
+  margin-top: 2.5%;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-items: center;
+  align-items: center
+}
+
+.gameBoard {
+  width: 93%;
+}
+.buttonsBoard{
+  display: flex;
+  width: 5%;
+  justify-content: center;
+  align-items: center;
+}
+
+.userHand {
+  margin-top: 2.5%;
+  display: flex;
+  flex-wrap: nowrap; 
+  justify-items: center;
+  align-items: center; 
 }

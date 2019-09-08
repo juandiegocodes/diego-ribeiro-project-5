@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import firebase from './firebase';
 import './App.css';
 
 class App extends Component {
@@ -16,13 +17,18 @@ class App extends Component {
       dealerAceCounter:0,
       userScore:0,
       houseScore:0,
-      gameEnd: false
+      totalScore:0,
+      gameEnd: false,
+      timer: 500,
+      gameOver: false,
+      gameOverFb:false,
+      leaderboard:[],
+      userInput: ""
     }
   }
 
   componentDidMount() {
     console.log('did mount');
-
   }
 
   newDeck =() => {
@@ -93,7 +99,7 @@ class App extends Component {
       this.setState({
         dealerAceCounter: this.state.dealerAceCounter + 10
       });
-      console.log(this.state.dealerAceCounter);
+      console.log('as de dealer',this.state.dealerAceCounter);
       return 11
     }
     else return value
@@ -107,7 +113,7 @@ class App extends Component {
       this.setState({
         userAceCounter: this.state.userAceCounter + 10
       });
-      console.log(this.state.userAceCounter);
+      console.log('contando as de usuario',this.state.userAceCounter);
       return 11
     }
     else return value
@@ -147,13 +153,14 @@ class App extends Component {
         this.setState({
           userdeckValue: this.state.userdeckValue +  userCard1
         })
-        console.log(this.state.userdeckValue);
+        console.log("user hand",this.state.userdeckValue);
         this.checkdeckValue()
       });
     }
   }
 
   dealerRequestCard = (id) => {
+    setTimeout(()=>{
     axios({
       method: 'get',
       url:`https://deckofcardsapi.com/api/deck/${id}/draw/`,
@@ -168,22 +175,22 @@ class App extends Component {
       this.setState({
         dealerdeckValue: this.state.dealerdeckValue +  dealerCard1
       })
-      console.log(this.state.dealerdeckValue);
+      console.log("la mano del dealer",this.state.dealerdeckValue);
       if(this.state.dealerdeckValue < this.state.userdeckValue && this.state.dealerdeckValue < 21) {
         this.dealerRequestCard(this.state.deckId);
       }
       else {
         this.checkdeckValue();
       }
-    });
+    })}
+    ,1000)
   }
 
   checkdeckValue = () => {
     console.log("running check");
-    console.log("acecounter",this.state.userAceCounter);
     if(this.state.userdeckValue >21) {
       if(this.state.userAceCounter > 0) {
-        console.log("is happening");
+        console.log("is happening usuaario as");
         this.setState({
           userdeckValue: this.state.userdeckValue - this.state.userAceCounter,
           userAceCounter: 0
@@ -201,23 +208,20 @@ class App extends Component {
     }
     else if(this.state.dealerdeckValue === 21 && this.state.userdeckValue === 21) {
       this.setState({
-        houseScore: this.state.houseScore,
-        userScore: this.state.userScore,
         gameEnd: true
       })
       console.log("tie");
     }
     else if(this.state.dealerdeckValue === this.state.userdeckValue) {
       this.setState({
-        houseScore: this.state.houseScore ,
-        userScore: this.state.userScore ,
         gameEnd: true
       })
       console.log("tie");
     }
     else if(this.state.dealerdeckValue >21) {
       if(this.state.dealerAceCounter > 0) {
-        console.log("is happening");
+        console.log("is happening de deaker");
+        console.log(this.state.dealerAceCounter);
         this.setState({
           dealerdeckValue: this.state.dealerdeckValue - this.state.dealerAceCounter,
           dealerAceCounter: 0
@@ -251,14 +255,40 @@ class App extends Component {
     this.setState({
       gameStart: true
     })
+    this.startTimer();
   }
-
   stay = () => {
+      console.log("user hand",this.state.userdeckValue);
       this.checkdeckValue()
       this.dealerRequestCard(this.state.deckId)
   }
 
+  timerOn = () => {
+    if (this.state.timer > 0 ) {
+      this.setState({
+        timer : this.state.timer - 1
+      })
+    }
+    else if (this.state.timer === 0) {
+      console.log("is happening");
+      this.gameisOver();
+      this.setState({
+        gameOver : true,
+        gameOverFb: true,
+        timer : this.state.timer - 0.01
+      })
+    }
+    else {
+
+    }
+  }
+
+  startTimer = () => {
+    setInterval(this.timerOn ,1000); 
+  }
+
   nextGame = () => {
+    console.log('newgame');
     this.setState({
       gameEnd: false,
       userdeckValue: 0,
@@ -270,48 +300,104 @@ class App extends Component {
 
     })
     this.newDeck();
+  }
 
+  inputChange = (event) => {
+    this.setState({userInput: event.target.value})
+  }
+
+  gameisOver = () => {
+      const dbRef = firebase.database().ref();
+      const userFb= [this.state.userInput,' : ',this.state.totalScore]
+      this.setState({
+        gameOverFb:false
+
+      })
+      dbRef.push(userFb);
+      dbRef.on('value', (response) => {
+        const newFbState = [];
+        const data =response.val();
+        for (let key in data) {
+          newFbState.push(data[key])
+        }
+        const sortedArray = newFbState.sort((a, b) =>  b[2] - a[2]);
+        const topTenArray = sortedArray.slice(0,10);
+        console.log(sortedArray);
+        console.log(topTenArray);
+        this.setState ({
+          leaderboard: topTenArray,
+        })
+      });
   }
 
   render() {
     return (
       <div className="App">
-        <nav>
-          <div>
-            <p>Time: </p>
-          </div>
-          <div>
-            <p>House won: {this.state.houseScore}</p>
-          </div>
-          <div>
-            <p>User Won: {this.state.userScore}</p>
-          </div>
-        </nav>
-        <h1>Speed 21</h1>
-        <div className="dealerHand">
-        {this.state.dealerHandUrls.map((url,key)=>{
-            return (
-              <img src={url} key={key} alt="poker card" />             )
-          })}
-        </div>
-        <div className="userHand">
-          {this.state.userHandUrls.map((url,key)=>{
-            return (
-              <img src={url} key={key} alt="poker card"/>             )
-          })}
-        </div>
-        {this.state.gameStart ?
-          <div>
-            <div> 
-             <button onClick={()=>{this.userRequestCard(this.state.deckId)}}> Request New Card </button>
-             <button onClick={()=>{this.stay()}}> Stay </button>
+        {this.state.gameStart === false && this.state.gameOver === false  && 
+        <header className="Header">
+          <h1>Speed 21</h1>
+          <input type="text" id="playerName" onChange={this.inputChange} value={this.state.userInput} placeholder="Enter Your Name" />
+          <button onClick={this.startButton}> Start</button>
+        </header>}
+        <div className="playing">
+          {this.state.gameStart && this.state.gameOver === false &&
+          <div className="gameBoard">
+            <nav>
+              <div>
+                <p>Time: {this.state.timer}</p>
+              </div>
+              <div>
+                <p>House: {this.state.houseScore}</p>
+              </div>
+              <div>
+                <p>User: {this.state.userScore}</p>
+              </div>
+            </nav>
+            <div className="cards">
+              <div className="dealerHand">
+              {this.state.dealerHandUrls.map((url,key)=>{
+                  return (
+                    <figure>
+                      <img src={url} key={key} alt="poker card" /> 
+                    </figure>            )
+                })}
+              </div>
+              <div className="userHand">
+                {this.state.userHandUrls.map((url,key)=>{
+                  return (
+                    <figure>
+                      <img src={url} key={key} alt="poker card"/> 
+                    </figure>            )
+                })}
+              </div>
             </div>
           </div>
-           : 
-           <button onClick={this.startButton}> Start</button>
-        }
+          }
+          {this.state.gameStart && this.state.gameOver === false && this.state.gameEnd === false &&
+            <div className="buttonsBoard">
+              <div> 
+               <button onClick={()=>{this.userRequestCard(this.state.deckId)}}> Request</button>
+               <button onClick={()=>{this.stay()}}> Stay </button>
+              </div>
+            </div>
+          }
+          {
+            this.state.gameEnd &&  <button onClick={this.nextGame}> Next</button>
+          }
+        </div>
         {
-          this.state.gameEnd &&  <button onClick={this.nextGame}> Next Game </button>
+          this.state.gameOver && 
+          <div className="gameover">
+            <p>GAME OVER!!!!!!</p>
+            <p>Your Score is: {this.state.userScore}</p>
+            <p>Check the leaderboard</p>
+            <ul className="leaderboard">
+              {this.state.leaderboard.map((value, key)=>{
+                return (
+                  <li key={key}>{value}</li>             )
+              })}
+            </ul>
+          </div>
         }
       </div>
     );

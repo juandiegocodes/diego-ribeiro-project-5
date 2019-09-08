@@ -19,14 +19,14 @@ class App extends Component {
       houseScore:0,
       totalScore:0,
       gameEnd: false,
-      timer: 1,
+      timer: 100,
       gameOver: false,
-      gameOverFb:false,
       leaderboard:[],
       userInput: "",
       userWon: false,
       dealerWon: false,
-      tie:false
+      tie:false,
+      stay:false
     }
   }
 
@@ -279,6 +279,9 @@ class App extends Component {
     this.startTimer();
   }
   stay = () => {
+    this.setState({
+      stay: true
+    })
     if(this.state.userdeckValue ===21){
       this.checkuser();
     }
@@ -300,7 +303,6 @@ class App extends Component {
       this.gameisOver();
       this.setState({
         gameOver : true,
-        gameOverFb: true,
         timer : this.state.timer - 0.01
       })
     }
@@ -316,6 +318,7 @@ class App extends Component {
   nextGame = () => {
     console.log('newgame');
     this.setState({
+      stay:false,
       gameEnd: false,
       userdeckValue: 0,
       dealerdeckValue: 0,
@@ -326,7 +329,6 @@ class App extends Component {
       tie:false,
       dealerWon: false,
       userWon:false
-
     })
     this.newDeck();
   }
@@ -336,12 +338,11 @@ class App extends Component {
   }
 
   gameisOver = () => {
+    this.setState({
+      totalScore:this.state.userScore - this.state.houseScore
+    })
       const dbRef = firebase.database().ref();
       const userFb= [this.state.userInput,' : ',this.state.totalScore]
-      this.setState({
-        gameOverFb:false
-
-      })
       dbRef.push(userFb);
       dbRef.on('value', (response) => {
         const newFbState = [];
@@ -359,6 +360,32 @@ class App extends Component {
       });
   }
 
+  playAgain = () => {
+    console.log('Wholenewgame');
+    this.setState({
+      deckId: "",
+      userdeckValue: 0,
+      dealerdeckValue: 0,
+      userHandUrls: [],
+      dealerHandUrls:[],
+      userAceCounter:0,
+      dealerAceCounter:0,
+      userScore:0,
+      houseScore:0,
+      totalScore:0,
+      gameEnd: false,
+      timer: 100,
+      gameOver: false,
+      leaderboard:[],
+      userWon: false,
+      dealerWon: false,
+      tie:false,
+      stay:false
+    })
+    this.newDeck();
+
+  }
+
   render() {
     return (
       <div className="App">
@@ -369,24 +396,26 @@ class App extends Component {
           <button onClick={this.startButton}> Start</button>
         </header>}
         <div className="playing">
-          <div className="announcement">
-            {this.state.userWon && this.state.gameEnd && this.state.gameOver ===false && <p>User Won!</p>}
-            {this.state.dealerWon && this.state.gameEnd &&this.state.gameOver ===false &&<p>Dealer Won!</p>}
-            {this.state.tie && this.state.gameEnd && this.state.gameOver ===false&&<p>TIE!</p>}
-          </div>
           {this.state.gameStart && this.state.gameOver === false &&
           <div className="gameBoard">
-            <nav>
-              <div>
-                <p>Time: {this.state.timer}</p>
+            <div className="globalNav">
+              <div className="announcement">
+                {this.state.userWon && this.state.gameEnd && this.state.gameOver ===false && <p>User Won!</p>}
+                {this.state.dealerWon && this.state.gameEnd &&this.state.gameOver ===false &&<p>Dealer Won!</p>}
+                {this.state.tie && this.state.gameEnd && this.state.gameOver ===false&&<p>TIE!</p>}
               </div>
-              <div>
-                <p>House: {this.state.houseScore}</p>
-              </div>
-              <div>
-                <p>User: {this.state.userScore}</p>
-              </div>
-            </nav>
+              <nav>
+                <div>
+                  <p>{this.state.timer}s</p>
+                </div>
+                <div>
+                  <p>House: {this.state.houseScore}</p>
+                </div>
+                <div>
+                  <p>User: {this.state.userScore}</p>
+                </div>
+              </nav>
+            </div>
             <div className="cards">
               <div className="dealerHand">
               {this.state.dealerHandUrls.map((url,key)=>{
@@ -407,12 +436,10 @@ class App extends Component {
             </div>
           </div>
           }
-          {this.state.gameStart && this.state.gameOver === false && this.state.gameEnd === false &&
+          {this.state.gameStart && this.state.gameOver === false && this.state.gameEnd === false && this.state.stay === false &&
             <div className="buttonsBoard">
-              <div> 
-               <button onClick={()=>{this.userRequestCard(this.state.deckId)}}> Request</button>
-               <button onClick={()=>{this.stay()}}> Stay </button>
-              </div>
+              <button onClick={()=>{this.userRequestCard(this.state.deckId)}}>Hit</button>
+              <button onClick={()=>{this.stay()}}>Stay</button>
             </div>
           }
           {
@@ -428,12 +455,13 @@ class App extends Component {
           this.state.gameOver && 
           <div className="gameover">
             <h2>GAME OVER</h2>
-            <p>Hi! {this.state.userInput} , Your Score is: {this.state.userScore} 👑 </p>
+            <p>Hi {this.state.userInput}!, Your Score is: {this.state.totalScore} 👑 </p>
+            <button onClick={this.playAgain} className="tryAgain"> Again?</button>
             <h3>♠-----High Scores-----♥</h3>
             <ol className="leaderboard">
               {this.state.leaderboard.map((value, key)=>{
                 return (
-                  <li key={key}>{value}</li>             )
+                  <li key={key}>{value}  Pts</li>             )
               })}
             </ol>
           </div>

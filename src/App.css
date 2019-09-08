@@ -36,6 +36,10 @@ header {
   justify-content: center;
   align-items: center;
 }
+
+header button {
+  margin: 7% 0 0 0;
+}
 h1{
   font-family: 'Monoton', cursive;
   color: #b92e34;
@@ -84,7 +88,7 @@ button {
     border-radius: 6rem;
     transition: all linear 0.2s;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
-    margin: 2rem 2rem 2rem 0;
+    margin-right: 3.5%;
 }
 
 /* gameboard */
@@ -98,7 +102,7 @@ nav{
 }
 
 nav p {
-  margin: 15% 0 0 0;
+  margin: 1rem 0 0 0;
 }
 
 img {
@@ -106,6 +110,7 @@ img {
 }
 .playing {
   display: flex;
+  flex-direction: column;
 }
 .cards {
   display: flex;
@@ -122,17 +127,18 @@ figure {
   margin-bottom: 5%;
   margin-top: 2.5%;
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-items: center;
-  align-items: center
+  align-items: center;
+  justify-content: center;
 }
 
 .gameBoard {
-  width: 90%;
+  width: 100%;
+  height: 85vh;
 }
 .buttonsBoard{
   display: flex;
-  width: 1%;
   justify-content: center;
   align-items: center;
 }
@@ -141,22 +147,25 @@ figure {
   width: 5%;
   color:white;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  align-self: flex-start;
+  justify-self: flex-start;
 }
 
 .announcement p {
   animation: neon 1.5s ease-in-out infinite alternate;
   font-size: 1.5rem;
   margin-left: 1rem;
+  margin-right: 10%;
 }
 
 .userHand {
   margin-top: 2.5%;
   display: flex;
-  flex-wrap: nowrap; 
+  flex-wrap: wrap; 
   justify-items: center;
-  align-items: center; 
+  align-items: center;
+  padding: 1rem;
+  justify-content: center; 
 }
 .gameover {
   display: flex;
@@ -169,4 +178,86 @@ figure {
 
 .gameover p{
   font-size: 1.5rem;
+}
+
+.globalNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.leaderboard {
+  font-size: 1.5rem;
+  text-align: left;
+  padding:  0rem 3rem;
+}
+
+.leaderboard li {
+  margin-bottom: 5%;
+}
+/* Portrait tablet and small desktops */
+@media (max-width: 940px){}
+/* Landscape phone to portrait tablet */
+@media (max-width: 800px){
+  h1{
+    font-size: 7.5rem;
+  }
+  figure {
+    width: 140px;
+  }
+  .cards{
+    height: 75vh;
+  }
+  nav {
+    font-size: 1.5rem;
+  }
+}
+/* Landscape phones and down */
+@media (max-width: 500px){
+  h1{
+    font-size: 5.5rem;
+  }
+  figure {
+    width: 110px;
+  }
+  nav {
+    font-size: 1.3rem;
+  }
+  .announcement p {
+    font-size: 1rem;
+  }
+  nav div {
+    padding-right: 1rem;
+  }
+  h2 {
+    font-size: 3rem;
+  }
+  h3{
+    font-size: 2rem;
+  }
+}
+/*Even smaller*/
+@media(max-width: 320px){
+  h1{
+    font-size: 4.5rem;
+  }
+  figure {
+    width: 80px;
+  }
+
+  button {
+    width: 4.5rem;
+    height: 2rem;
+    line-height: 0;
+  }
+  .gameover h2 {
+    font-size: 2rem;
+  }
+  .gameover h3 {
+    font-size: 1.75rem;
+  }
+  .gameover p {
+    font-size: 1.35rem;
+    padding-left: 0.5rem;
+  }
 }

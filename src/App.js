@@ -15,25 +15,22 @@ class App extends Component {
       dealerHandUrls:[],
       userAceCounter:0,
       dealerAceCounter:0,
-      userScore:0,
-      houseScore:0,
-      totalScore:0,
       gameEnd: false,
-      timer: 100,
+      timer: 120,
       gameOver: false,
       leaderboard:[],
       userInput: "",
       userWon: false,
       dealerWon: false,
       tie:false,
-      stay:false
+      stay:false,
+      bet:false,
+      bank:500,
+      amountToBet: 0
     }
   }
 
-  componentDidMount() {
-    console.log('did mount');
-  }
-
+  // This will give us a brand new deck
   newDeck =() => {
     axios({
       method: 'get',
@@ -51,7 +48,7 @@ class App extends Component {
       this.initialUser(res.data.deck_id) 
     });
   }
-
+// This will give  1 card to the dealer
   initialDealer =(id) => {
     axios({
       method: 'get',
@@ -69,7 +66,7 @@ class App extends Component {
       })
     });
   }
-
+// this will give the initial 2 cards to the user
   initialUser =(id) => {
     axios({
       method: 'get',
@@ -93,7 +90,7 @@ class App extends Component {
       }
     });
   }
-
+// this will convert J,Q,K & A to numerial values and also will keep track of the dealer A's
   dealerFilterCard = (value) => {
     if (value === "QUEEN" || value === "KING" || value === "JACK") {
       return 10
@@ -108,6 +105,7 @@ class App extends Component {
     else return value
   }
 
+// this will convert J,Q,K & A to numerial values and also will keep track of the user A's
   userFilterCard = (value) => {
     if (value === "QUEEN" || value === "KING" || value === "JACK") {
       return 10
@@ -121,7 +119,7 @@ class App extends Component {
     }
     else return value
   }
-
+// grabing url for  user cards
   pushUserUrl = (url) => {
     const newpush = [...this.state.userHandUrls]
     newpush.push(url)
@@ -129,6 +127,8 @@ class App extends Component {
       userHandUrls : newpush
     })
   }
+
+// grabing url for  dealer cards
   pushDealerUrl = (url) => {
     const newpush = [...this.state.dealerHandUrls]
     newpush.push(url)
@@ -137,6 +137,7 @@ class App extends Component {
     })
   }
 
+// user request an extra card
   userRequestCard = (id) => {
     if(this.state.userdeckValue ===21){
       this.stay()
@@ -161,7 +162,7 @@ class App extends Component {
       });
     }
   }
-
+// dealer request an extra card
   dealerRequestCard = (id) => {
     if (this.state.gameEnd === false) {
       setTimeout(()=>{
@@ -190,6 +191,8 @@ class App extends Component {
       ,600)
     }
   }
+
+  // checking if user has gone over 21
   checkuser = () => {
     if(this.state.userdeckValue >21) {
       if(this.state.userAceCounter > 0) {
@@ -203,9 +206,10 @@ class App extends Component {
       }
       else {
       this.setState({
-        houseScore: this.state.houseScore + 1,
+        bank: this.state.bank - this.state.amountToBet,
         gameEnd: true,
-        dealerWon:true
+        dealerWon:true,
+        amountToBet:0
       })
       console.log("dealer win");
       }
@@ -215,6 +219,7 @@ class App extends Component {
     }
   }
 
+  // checking if dealer won
   checkdealer =() => {
     if(this.state.dealerdeckValue >21) {
       if(this.state.dealerAceCounter > 0) {
@@ -229,9 +234,10 @@ class App extends Component {
       }
       else {
         this.setState({
-          userScore: this.state.userScore + 1,
+          bank: parseInt(this.state.bank) + parseInt(this.state.amountToBet),
           gameEnd: true,
-          userWon: true
+          userWon: true,
+          amountToBet:0
         })
       console.log("user win");
       }
@@ -259,9 +265,10 @@ class App extends Component {
     }
     else if (this.state.dealerdeckValue > this.state.userdeckValue){
       this.setState({
-        houseScore: this.state.houseScore + 1,
+        bank: this.state.bank - this.state.amountToBet,
         gameEnd: true,
-        dealerWon: true
+        dealerWon: true,
+        amountToBet:0
       })
       console.log("dealer win");
     }
@@ -271,13 +278,16 @@ class App extends Component {
     }
   }
 
+  // when user clicks the start button
   startButton = () => {
-    this.newDeck();
     this.setState({
-      gameStart: true
+      gameStart: true,
+      bet:true
     })
     this.startTimer();
   }
+
+  // when user clicks stay
   stay = () => {
     this.setState({
       stay: true
@@ -291,7 +301,7 @@ class App extends Component {
       this.dealerRequestCard(this.state.deckId)
     }
   }
-
+// timer function
   timerOn = () => {
     if (this.state.timer > 0 ) {
       this.setState({
@@ -310,12 +320,20 @@ class App extends Component {
 
     }
   }
-
+// start timer
   startTimer = () => {
     setInterval(this.timerOn ,1000); 
   }
-
+// when user advance to enxt game
   nextGame = () => {
+    if(this.state.bank <1) {
+      console.log("HEYO");
+      this.setState({
+        timer:0,
+        gameisOver:true
+      })
+    }
+    else {
     console.log('newgame');
     this.setState({
       stay:false,
@@ -328,21 +346,29 @@ class App extends Component {
       dealerHandUrls:[],
       tie:false,
       dealerWon: false,
-      userWon:false
+      userWon:false,
+      bet:true
     })
     this.newDeck();
   }
-
+  }
+// keep track of user name
   inputChange = (event) => {
     this.setState({userInput: event.target.value})
   }
-
+// keeps track of amount bet
+  updateInputValue =(evt) => {
+    this.setState({
+      amountToBet: evt.target.value
+    });
+  }
+// time is over or bank is over
   gameisOver = () => {
     this.setState({
-      totalScore:this.state.userScore - this.state.houseScore
+      bet:false
     })
       const dbRef = firebase.database().ref();
-      const userFb= [this.state.userInput,' : ',this.state.totalScore]
+      const userFb= [this.state.userInput,' : ',this.state.bank]
       dbRef.push(userFb);
       dbRef.on('value', (response) => {
         const newFbState = [];
@@ -359,7 +385,7 @@ class App extends Component {
         })
       });
   }
-
+// play again button
   playAgain = () => {
     console.log('Wholenewgame');
     this.setState({
@@ -380,11 +406,47 @@ class App extends Component {
       userWon: false,
       dealerWon: false,
       tie:false,
-      stay:false
+      stay:false,
+      bank:500
     })
     this.newDeck();
-
   }
+// bet functions
+  startBet =() => {
+    this.setState({
+      bet:true
+    })
+  }
+  placeBet =() => {
+    if(this.state.amountToBet > this.state.bank) {
+      this.setState({
+        amountToBet: this.state.bank
+      })
+    }
+    else if (this.state.amountToBet < 1) {
+      this.setState({
+        amountToBet: 1
+      })
+    }
+    this.setState({
+      stay:false,
+      gameEnd: false,
+      userdeckValue: 0,
+      dealerdeckValue: 0,
+      userAceCounter:0,
+      dealerAceCounter:0,
+      userHandUrls: [],
+      dealerHandUrls:[],
+      tie:false,
+      dealerWon: false,
+      userWon:false,
+      bet:false
+    });
+
+    this.newDeck();
+  }
+
+// render
 
   render() {
     return (
@@ -409,37 +471,45 @@ class App extends Component {
                   <p>{this.state.timer}s</p>
                 </div>
                 <div>
-                  <p>House: {this.state.houseScore}</p>
-                </div>
-                <div>
-                  <p>User: {this.state.userScore}</p>
+                  <p>Bank: {this.state.bank}</p>
                 </div>
               </nav>
             </div>
-            <div className="cards">
-              <div className="dealerHand">
-              {this.state.dealerHandUrls.map((url,key)=>{
-                  return (
-                    <figure>
-                      <img src={url} key={key} alt="poker card" /> 
-                    </figure>            )
-                })}
+            { this.state.gameStart && this.state.gameOver === false && this.state.bet ===false &&
+              <div className="cards">
+                <div className="dealerHand">
+                {this.state.dealerHandUrls.map((url,key)=>{
+                    return (
+                      <figure>
+                        <img src={url} key={key} alt="poker card" /> 
+                      </figure>            )
+                  })}
+                </div>
+                <div className="userHand">
+                  {this.state.userHandUrls.map((url,key)=>{
+                    return (
+                      <figure>
+                        <img src={url} key={key} alt="poker card"/> 
+                      </figure>            )
+                  })}
+                </div>
               </div>
-              <div className="userHand">
-                {this.state.userHandUrls.map((url,key)=>{
-                  return (
-                    <figure>
-                      <img src={url} key={key} alt="poker card"/> 
-                    </figure>            )
-                })}
-              </div>
-            </div>
+            }
           </div>
           }
           {this.state.gameStart && this.state.gameOver === false && this.state.gameEnd === false && this.state.stay === false &&
-            <div className="buttonsBoard">
-              <button onClick={()=>{this.userRequestCard(this.state.deckId)}}>Hit</button>
-              <button onClick={()=>{this.stay()}}>Stay</button>
+            <div className="mainBoard">
+              {this.state.gameStart && this.state.gameOver === false && this.state.gameEnd === false && this.state.stay === false && this.state.bet===false &&
+              <div className="buttonsBoard">
+                <button onClick={()=>{this.userRequestCard(this.state.deckId)}}>Hit</button>
+                <button onClick={()=>{this.stay()}}>Stay</button>
+              </div>
+              }
+              {this.state.gameStart && this.state.gameOver === false && this.state.gameEnd === false && this.state.stay === false && this.state.bet &&<div className="number">
+	              <input type="number" min="1" max={this.state.bank} value={this.state.inputValue} onChange={this.updateInputValue}/>
+                <button onClick={()=>{this.placeBet()}}>Bet</button>
+              </div>
+              }
             </div>
           }
           {
@@ -455,7 +525,7 @@ class App extends Component {
           this.state.gameOver && 
           <div className="gameover">
             <h2>GAME OVER</h2>
-            <p>Hi {this.state.userInput}!, Your Score is: {this.state.totalScore} 👑 </p>
+            <p>Hi {this.state.userInput}!, Your Score is: {this.state.bank}$ 👑 </p>
             <button onClick={this.playAgain} className="tryAgain"> Again?</button>
             <h3>♠-----High Scores-----♥</h3>
             <ol className="leaderboard">

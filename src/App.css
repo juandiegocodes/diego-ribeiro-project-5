@@ -7,10 +7,12 @@ article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary
 .visuallyHidden:not(:focus):not(:active) { position: absolute; width: 1px; height: 1px; margin: -1px;border: 0;padding: 0;white-space: nowrap;clip-path: inset(100%);clip: rect(00 0 0);overflow: hidden;}
 
 @import url(https://fonts.googleapis.com/css?family=Monoton);
+@import url(https://fonts.googleapis.com/css?family=Arvo);
 
 body{
   background: url(./resources/tableBackground.png);
   background-size: cover;
+  font-family: 'Arvo', serif;
 }
 .App {
   text-align: center;
@@ -39,6 +41,18 @@ h1{
   color: #b92e34;
   font-size: 10rem;
   animation: neon 1.5s ease-in-out infinite alternate;
+}
+
+h2 {
+  font-size: 4rem;
+  color:rgb(255, 17, 37);
+  margin: 0;
+}
+
+h3{
+  font-size: 2.5rem;
+  color:rgb(255, 17, 37);
+  margin: 0;
 }
 
 @keyframes neon {
@@ -114,13 +128,27 @@ figure {
 }
 
 .gameBoard {
-  width: 93%;
+  width: 90%;
 }
 .buttonsBoard{
   display: flex;
-  width: 5%;
+  width: 1%;
   justify-content: center;
   align-items: center;
+}
+
+.announcement {
+  width: 5%;
+  color:white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.announcement p {
+  animation: neon 1.5s ease-in-out infinite alternate;
+  font-size: 1.5rem;
+  margin-left: 1rem;
 }
 
 .userHand {
@@ -129,4 +157,16 @@ figure {
   flex-wrap: nowrap; 
   justify-items: center;
   align-items: center; 
+}
+.gameover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: white
+}
+
+.gameover p{
+  font-size: 1.5rem;
 }

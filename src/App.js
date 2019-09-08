@@ -19,11 +19,14 @@ class App extends Component {
       houseScore:0,
       totalScore:0,
       gameEnd: false,
-      timer: 500,
+      timer: 1,
       gameOver: false,
       gameOverFb:false,
       leaderboard:[],
-      userInput: ""
+      userInput: "",
+      userWon: false,
+      dealerWon: false,
+      tie:false
     }
   }
 
@@ -154,40 +157,40 @@ class App extends Component {
           userdeckValue: this.state.userdeckValue +  userCard1
         })
         console.log("user hand",this.state.userdeckValue);
-        this.checkdeckValue()
+        this.checkuser()
       });
     }
   }
 
   dealerRequestCard = (id) => {
-    setTimeout(()=>{
-    axios({
-      method: 'get',
-      url:`https://deckofcardsapi.com/api/deck/${id}/draw/`,
-      responseType: 'json',
-      params:{
-        count:1
-      }
-    }).then((res)=>{
-      let dealerCard1 = res.data.cards[0].value;
-      this.pushDealerUrl(res.data.cards[0].image);
-      dealerCard1 = parseInt(this.dealerFilterCard(dealerCard1));
-      this.setState({
-        dealerdeckValue: this.state.dealerdeckValue +  dealerCard1
-      })
-      console.log("la mano del dealer",this.state.dealerdeckValue);
-      if(this.state.dealerdeckValue < this.state.userdeckValue && this.state.dealerdeckValue < 21) {
-        this.dealerRequestCard(this.state.deckId);
-      }
-      else {
-        this.checkdeckValue();
-      }
-    })}
-    ,1000)
+    if (this.state.gameEnd === false) {
+      setTimeout(()=>{
+      axios({
+        method: 'get',
+        url:`https://deckofcardsapi.com/api/deck/${id}/draw/`,
+        responseType: 'json',
+        params:{
+          count:1
+        }
+      }).then((res)=>{
+        let dealerCard1 = res.data.cards[0].value;
+        this.pushDealerUrl(res.data.cards[0].image);
+        dealerCard1 = parseInt(this.dealerFilterCard(dealerCard1));
+        this.setState({
+          dealerdeckValue: this.state.dealerdeckValue +  dealerCard1
+        })
+        console.log("la mano del dealer",this.state.dealerdeckValue);
+        if(this.state.dealerdeckValue < this.state.userdeckValue && this.state.dealerdeckValue < 21) {
+          this.dealerRequestCard(this.state.deckId);
+        }
+        else {
+          this.checkdealer();
+        }
+      })}
+      ,600)
+    }
   }
-
-  checkdeckValue = () => {
-    console.log("running check");
+  checkuser = () => {
     if(this.state.userdeckValue >21) {
       if(this.state.userAceCounter > 0) {
         console.log("is happening usuaario as");
@@ -196,29 +199,24 @@ class App extends Component {
           userAceCounter: 0
         })
         console.log("newuserdeck alue",this.state.userdeckValue );
-        this.checkdeckValue();
+        this.checkuser();
       }
       else {
       this.setState({
         houseScore: this.state.houseScore + 1,
-        gameEnd: true
+        gameEnd: true,
+        dealerWon:true
       })
       console.log("dealer win");
       }
     }
-    else if(this.state.dealerdeckValue === 21 && this.state.userdeckValue === 21) {
-      this.setState({
-        gameEnd: true
-      })
-      console.log("tie");
+    else if(this.state.userdeckValue ===21 && this.state.dealerdeckValue < 21){
+      this.checkdealer();
     }
-    else if(this.state.dealerdeckValue === this.state.userdeckValue) {
-      this.setState({
-        gameEnd: true
-      })
-      console.log("tie");
-    }
-    else if(this.state.dealerdeckValue >21) {
+  }
+
+  checkdealer =() => {
+    if(this.state.dealerdeckValue >21) {
       if(this.state.dealerAceCounter > 0) {
         console.log("is happening de deaker");
         console.log(this.state.dealerAceCounter);
@@ -227,25 +225,48 @@ class App extends Component {
           dealerAceCounter: 0
         })
         console.log("newuserdeck alue",this.state.dealerdeckValue );
-        this.dealerRequestCard(this.state.deckId)
-        this.checkdeckValue();
+        this.checkdealer();
       }
       else {
         this.setState({
           userScore: this.state.userScore + 1,
-          gameEnd: true
+          gameEnd: true,
+          userWon: true
         })
       console.log("user win");
       }
     }
+    else if(this.state.dealerdeckValue === 21 && this.state.userdeckValue === 21) {
+      this.setState({
+        gameEnd: true,
+        tie: true
+      })
+      console.log("tie");
+    }
+    else if(this.state.dealerdeckValue === this.state.userdeckValue) {
+      this.setState({
+        gameEnd: true,
+        tie: true
+      })
+      console.log("tie");
+    }
+    else if(this.state.dealerdeckValue === this.state.userdeckValue) {
+      this.setState({
+        gameEnd: true,
+        tie:false
+      })
+      console.log("tie");
+    }
     else if (this.state.dealerdeckValue > this.state.userdeckValue){
       this.setState({
         houseScore: this.state.houseScore + 1,
-        gameEnd: true
+        gameEnd: true,
+        dealerWon: true
       })
       console.log("dealer win");
     }
-    else if (this.state.userdeckValue === 21 && this.state.dealerdeckValue < 21) {
+
+    else if(this.state.dealerdeckValue < this.state.userdeckValue && this.state.dealerdeckValue <22 && this.state.userdeckValue < 22) {
       this.dealerRequestCard(this.state.deckId)
     }
   }
@@ -258,9 +279,14 @@ class App extends Component {
     this.startTimer();
   }
   stay = () => {
+    if(this.state.userdeckValue ===21){
+      this.checkuser();
+    }
+    else{
       console.log("user hand",this.state.userdeckValue);
-      this.checkdeckValue()
+      this.checkuser();
       this.dealerRequestCard(this.state.deckId)
+    }
   }
 
   timerOn = () => {
@@ -297,6 +323,9 @@ class App extends Component {
       dealerAceCounter:0,
       userHandUrls: [],
       dealerHandUrls:[],
+      tie:false,
+      dealerWon: false,
+      userWon:false
 
     })
     this.newDeck();
@@ -340,6 +369,11 @@ class App extends Component {
           <button onClick={this.startButton}> Start</button>
         </header>}
         <div className="playing">
+          <div className="announcement">
+            {this.state.userWon && this.state.gameEnd && this.state.gameOver ===false && <p>User Won!</p>}
+            {this.state.dealerWon && this.state.gameEnd &&this.state.gameOver ===false &&<p>Dealer Won!</p>}
+            {this.state.tie && this.state.gameEnd && this.state.gameOver ===false&&<p>TIE!</p>}
+          </div>
           {this.state.gameStart && this.state.gameOver === false &&
           <div className="gameBoard">
             <nav>
@@ -382,21 +416,26 @@ class App extends Component {
             </div>
           }
           {
-            this.state.gameEnd &&  <button onClick={this.nextGame}> Next</button>
+            this.state.gameEnd && this.state.gameOver === false  && 
+            <div className="buttonsBoard">
+              <div> 
+                <button onClick={this.nextGame} className="next"> Next</button>
+              </div> 
+            </div>
           }
         </div>
         {
           this.state.gameOver && 
           <div className="gameover">
-            <p>GAME OVER!!!!!!</p>
-            <p>Your Score is: {this.state.userScore}</p>
-            <p>Check the leaderboard</p>
-            <ul className="leaderboard">
+            <h2>GAME OVER</h2>
+            <p>Hi! {this.state.userInput} , Your Score is: {this.state.userScore} 👑 </p>
+            <h3>♠-----High Scores-----♥</h3>
+            <ol className="leaderboard">
               {this.state.leaderboard.map((value, key)=>{
                 return (
                   <li key={key}>{value}</li>             )
               })}
-            </ul>
+            </ol>
           </div>
         }
       </div>

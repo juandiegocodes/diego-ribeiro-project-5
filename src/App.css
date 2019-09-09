@@ -118,6 +118,7 @@ img {
   justify-content: center;
   align-items: center;
   height: inherit;
+  height: 80%;
 }
 
 figure {
@@ -125,8 +126,6 @@ figure {
 }
 
 .dealerHand {
-  margin-bottom: 5%;
-  margin-top: 2.5%;
   display: flex;
   flex-wrap: wrap;
   justify-items: center;
@@ -136,13 +135,14 @@ figure {
 
 .gameBoard {
   width: 100%;
-  height: 90vh;
+  height: 100vh;
 }
 .buttonsBoard{
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 10vh;
+  height: 100%;
+  height: 10%;
 }
 
 .mainBoard {
@@ -165,7 +165,6 @@ figure {
 }
 
 .userHand {
-  margin-top: 2.5%;
   display: flex;
   flex-wrap: wrap; 
   justify-items: center;
@@ -190,6 +189,7 @@ figure {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 5%;
 }
 
 .leaderboard {
@@ -202,13 +202,23 @@ figure {
   margin-bottom: 5%;
 }
 
+.betDiv{
+  margin-top: 25%;
+
+}
+
 .number {
   display: flex;
   justify-content: center;
 }
 
+.betDiv h3 {
+  color:white;
+  padding-bottom: 2rem;
+}
+
 .number input {
-  width: 7rem;
+  width: 9rem;
   font-size: 2rem;
   margin-right: 2.5%;
 }
@@ -221,9 +231,6 @@ figure {
   }
   figure {
     width: 140px;
-  }
-  .cards{
-    height: 75vh;
   }
   nav {
     font-size: 1.5rem;

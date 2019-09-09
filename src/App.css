@@ -67,6 +67,16 @@ h3{
     text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px rgb(255, 17, 37), 0 0 35px rgb(255, 17, 37), 0 0 40px rgb(255, 17, 37), 0 0 50px rgb(255, 17, 37), 0 0 75px white;
   }
 }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
 
 input {
   border: none;
@@ -89,6 +99,11 @@ button {
     transition: all linear 0.2s;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
     margin-right: 3.5%;
+}
+
+button:hover {
+  border: 0.3333333333rem dashed blue;
+  color: blue;
 }
 
 /* gameboard */
@@ -140,10 +155,22 @@ figure {
 }
 .buttonsBoard{
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   height: 100%;
   height: 10%;
+}
+
+.buttonsBoard .buttonHit {
+  margin-left: 3.5%;
+}
+
+.buttonsBoard h3 {
+  color: white;
+}
+
+.buttonsBoard .buttonStay {
+  margin-right: 3.5%;
 }
 
 .mainBoard {
@@ -151,7 +178,7 @@ figure {
 }
 
 .announcement {
-  width: 5%;
+  width: 20%;
   color:white;
   display: flex;
   align-self: flex-start;
@@ -195,9 +222,9 @@ figure {
 }
 
 .leaderboard {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   text-align: left;
-  padding:  1rem 3rem;
+  padding:  1rem 3rem 0 3rem ;
   background-color: black;
   border: 3px solid white;
   border-radius: 15px;
@@ -208,7 +235,7 @@ figure {
 }
 
 .betDiv{
-  margin-top: 25%;
+  margin-top: 21%;
 
 }
 
@@ -226,6 +253,38 @@ figure {
   width: 9rem;
   font-size: 2rem;
   margin-right: 2.5%;
+}
+
+.instructions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.instructions h3 {
+  font-size: 3rem;
+}
+
+.instructions ul {
+  color: white;
+  font-size: 1.2rem;
+  list-style: none;
+  background-color: black;
+  border: 3px solid white;
+}
+
+.instructions ul li {
+  padding: 1rem;
+}
+
+.instructions button {
+  margin: 0;
+}
+
+.startButtons button{
+  margin: 2rem;
 }
 /* Portrait tablet and small desktops */
 @media (max-width: 940px){}
@@ -263,6 +322,16 @@ figure {
   }
   h3{
     font-size: 2rem;
+  }
+  .leaderboard {
+    padding: 0; 
+  }
+  .instructions {
+    height: auto;
+  }
+  .betDiv{
+    margin-top: 25%;
+  
   }
 }
 /*Even smaller*/

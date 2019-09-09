@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import firebase from './firebase';
+import firebase from './components/firebase';
 import Header from './components/Header';
+import Gameover from './components/Gameover';
+import Instructions from './components/Instructions'
 import './App.css';
 
 class App extends Component {
@@ -27,7 +29,8 @@ class App extends Component {
       stay:false,
       bet:false,
       bank:500,
-      amountToBet: 0
+      amountToBet: 0,
+      instructions:false
     }
   }
 
@@ -373,8 +376,8 @@ class App extends Component {
       dbRef.on('value', (response) => {
         const newFbState = [];
         const data =response.val();
-        for (let key in data) {
-          newFbState.push(data[key])
+        for (let item in data) {
+          newFbState.push(data[item])
         }
         const sortedArray = newFbState.sort((a, b) =>  b[2] - a[2]);
         const topTenArray = sortedArray.slice(0,10);
@@ -445,14 +448,30 @@ class App extends Component {
 
     this.newDeck();
   }
+// instructions button pressed
+  instructionsButton = () => {
+    this.setState({
+      instructions:true
+    })
+  }
+// exit instructions
+  backInstructionsButton = () => {
+    this.setState({
+      instructions:false
+    })
+  }
 
 // render
 
   render() {
     return (
       <div className="App">
-        {this.state.gameStart === false && this.state.gameOver === false  &&
-        <Header value={this.state.userInput} onChange={this.inputChange} onClick={this.startButton}/> 
+        {this.state.gameStart === false && this.state.gameOver === false && this.state.instructions === false &&
+        <Header tracking={this.state.userInput} trackingChanges={this.inputChange} startClicked={this.startButton}
+        instructionsClicked={this.instructionsButton}/> 
+        }
+        {this.state.gameStart === false && this.state.gameOver === false && this.state.instructions &&
+          <Instructions exitInstructions={this.backInstructionsButton}/>
         }
         <div className="playing">
           {this.state.gameStart && this.state.gameOver === false &&
@@ -475,7 +494,7 @@ class App extends Component {
             {this.state.gameStart && this.state.gameOver === false && this.state.gameEnd === false && this.state.stay === false && this.state.bet &&<div className="betDiv">
               <h3>Place your bet Quick!</h3>
               <div className="number">
-                <input type="number" min="1" max={this.state.bank} value={this.state.inputValue} onChange={this.updateInputValue}/>
+                <input type="number" min="1" placeholder="$100" max={this.state.bank} value={this.state.inputValue} onChange={this.updateInputValue}/>
                 <button onClick={()=>{this.placeBet()}}>Bet</button>
               </div>
             </div>
@@ -502,8 +521,9 @@ class App extends Component {
             }
             {this.state.gameStart && this.state.gameOver === false && this.state.gameEnd === false && this.state.stay === false && this.state.bet===false &&
             <div className="buttonsBoard">
-              <button onClick={()=>{this.userRequestCard(this.state.deckId)}}>Hit</button>
-              <button onClick={()=>{this.stay()}}>Stay</button>
+              <button className="buttonStay" onClick={()=>{this.stay()}}>Stay</button>
+              <h3>{this.state.userInput}</h3>
+              <button className="buttonHit" onClick={()=>{this.userRequestCard(this.state.deckId)}}>Hit</button>
             </div>
             }
             {
@@ -519,18 +539,7 @@ class App extends Component {
         </div>
         {
           this.state.gameOver && 
-          <div className="gameover">
-            <h2>GAME OVER</h2>
-            <p>Hi {this.state.userInput}!, Your got {this.state.bank}$ left in your Bank 👑 </p>
-            <button onClick={this.playAgain} className="tryAgain"> Again?</button>
-            <h3>♠-----High Scores-----♥</h3>
-            <ol className="leaderboard">
-              {this.state.leaderboard.map((value, key)=>{
-                return (
-                  <li key={key}>{value}  $</li>             )
-              })}
-            </ol>
-          </div>
+          <Gameover userInput={this.state.userInput} bank={this.state.bank} playAgainButton={this.playAgain} leaderboard={this.state.leaderboard}/>
         }
       </div>
     );

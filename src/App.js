@@ -103,7 +103,6 @@ class App extends Component {
       this.setState({
         dealerAceCounter: this.state.dealerAceCounter + 10
       });
-      console.log('as de dealer',this.state.dealerAceCounter);
       return 11
     }
     else return value
@@ -118,7 +117,6 @@ class App extends Component {
       this.setState({
         userAceCounter: this.state.userAceCounter + 10
       });
-      console.log('contando as de usuario',this.state.userAceCounter);
       return 11
     }
     else return value
@@ -161,7 +159,6 @@ class App extends Component {
         this.setState({
           userdeckValue: this.state.userdeckValue +  userCard1
         })
-        console.log("user hand",this.state.userdeckValue);
         this.checkuser()
       });
     }
@@ -184,7 +181,6 @@ class App extends Component {
         this.setState({
           dealerdeckValue: this.state.dealerdeckValue +  dealerCard1
         })
-        console.log("la mano del dealer",this.state.dealerdeckValue);
         if(this.state.dealerdeckValue < this.state.userdeckValue && this.state.dealerdeckValue < 21) {
           this.dealerRequestCard(this.state.deckId);
         }
@@ -200,12 +196,10 @@ class App extends Component {
   checkuser = () => {
     if(this.state.userdeckValue >21) {
       if(this.state.userAceCounter > 0) {
-        console.log("is happening usuaario as");
         this.setState({
           userdeckValue: this.state.userdeckValue - this.state.userAceCounter,
           userAceCounter: 0
         })
-        console.log("newuserdeck alue",this.state.userdeckValue );
         this.checkuser();
       }
       else {
@@ -215,7 +209,6 @@ class App extends Component {
         dealerWon:true,
         amountToBet:0
       })
-      console.log("dealer win");
       }
     }
     else if(this.state.userdeckValue ===21 && this.state.dealerdeckValue < 21){
@@ -227,13 +220,10 @@ class App extends Component {
   checkdealer =() => {
     if(this.state.dealerdeckValue >21) {
       if(this.state.dealerAceCounter > 0) {
-        console.log("is happening de deaker");
-        console.log(this.state.dealerAceCounter);
         this.setState({
           dealerdeckValue: this.state.dealerdeckValue - this.state.dealerAceCounter,
           dealerAceCounter: 0
         })
-        console.log("newuserdeck alue",this.state.dealerdeckValue );
         this.checkdealer();
       }
       else {
@@ -243,7 +233,6 @@ class App extends Component {
           userWon: true,
           amountToBet:0
         })
-      console.log("user win");
       }
     }
     else if(this.state.dealerdeckValue === 21 && this.state.userdeckValue === 21) {
@@ -251,21 +240,18 @@ class App extends Component {
         gameEnd: true,
         tie: true
       })
-      console.log("tie");
     }
     else if(this.state.dealerdeckValue === this.state.userdeckValue) {
       this.setState({
         gameEnd: true,
         tie: true
       })
-      console.log("tie");
     }
     else if(this.state.dealerdeckValue === this.state.userdeckValue) {
       this.setState({
         gameEnd: true,
         tie:false
       })
-      console.log("tie");
     }
     else if (this.state.dealerdeckValue > this.state.userdeckValue){
       this.setState({
@@ -274,7 +260,6 @@ class App extends Component {
         dealerWon: true,
         amountToBet:0
       })
-      console.log("dealer win");
     }
 
     else if(this.state.dealerdeckValue < this.state.userdeckValue && this.state.dealerdeckValue <22 && this.state.userdeckValue < 22) {
@@ -284,6 +269,11 @@ class App extends Component {
 
   // when user clicks the start button
   startButton = () => {
+    if (this.state.userInput ==="") {
+      this.setState({
+        userInput: 'Guest'
+      })
+    }
     this.setState({
       gameStart: true,
       bet:true
@@ -300,7 +290,6 @@ class App extends Component {
       this.checkuser();
     }
     else{
-      console.log("user hand",this.state.userdeckValue);
       this.checkuser();
       this.dealerRequestCard(this.state.deckId)
     }
@@ -313,7 +302,6 @@ class App extends Component {
       })
     }
     else if (this.state.timer === 0) {
-      console.log("is happening");
       this.gameisOver();
       this.setState({
         gameOver : true,
@@ -331,14 +319,12 @@ class App extends Component {
 // when user advance to enxt game
   nextGame = () => {
     if(this.state.bank <1) {
-      console.log("HEYO");
       this.setState({
         timer:0,
         gameisOver:true
       })
     }
     else {
-    console.log('newgame');
     this.setState({
       stay:false,
       gameEnd: false,
@@ -381,8 +367,6 @@ class App extends Component {
         }
         const sortedArray = newFbState.sort((a, b) =>  b[2] - a[2]);
         const topTenArray = sortedArray.slice(0,10);
-        console.log(sortedArray);
-        console.log(topTenArray);
         this.setState ({
           leaderboard: topTenArray,
         })
@@ -390,7 +374,6 @@ class App extends Component {
   }
 // play again button
   playAgain = () => {
-    console.log('Wholenewgame');
     this.setState({
       deckId: "",
       userdeckValue: 0,
@@ -465,7 +448,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
+      <div className="wrapper">
         {this.state.gameStart === false && this.state.gameOver === false && this.state.instructions === false &&
         <Header tracking={this.state.userInput} trackingChanges={this.inputChange} startClicked={this.startButton}
         instructionsClicked={this.instructionsButton}/> 
@@ -478,8 +461,8 @@ class App extends Component {
           <div className="gameBoard">
             <div className="globalNav">
               <div className="announcement">
-                {this.state.userWon && this.state.gameEnd && this.state.gameOver ===false && <p>User Won!</p>}
-                {this.state.dealerWon && this.state.gameEnd &&this.state.gameOver ===false &&<p>Dealer Won!</p>}
+                {this.state.userWon && this.state.gameEnd && this.state.gameOver ===false && <p>User Win!</p>}
+                {this.state.dealerWon && this.state.gameEnd &&this.state.gameOver ===false &&<p>Dealer Win!</p>}
                 {this.state.tie && this.state.gameEnd && this.state.gameOver ===false&&<p>TIE!</p>}
               </div>
               <nav>
@@ -492,9 +475,10 @@ class App extends Component {
               </nav>
             </div>
             {this.state.gameStart && this.state.gameOver === false && this.state.gameEnd === false && this.state.stay === false && this.state.bet &&<div className="betDiv">
-              <h3>Place your bet Quick!</h3>
+              <h3>Place your bet quickly!</h3>
               <div className="number">
-                <input type="number" min="1" placeholder="$100" max={this.state.bank} value={this.state.inputValue} onChange={this.updateInputValue}/>
+                <label htmlFor="numInput" className="sr-only">Enter Your amount to bet</label>
+                <input type="number" min="0" placeholder="$100" max={this.state.bank} step="50" value={this.state.inputValue} onChange={this.updateInputValue}/>
                 <button onClick={()=>{this.placeBet()}}>Bet</button>
               </div>
             </div>

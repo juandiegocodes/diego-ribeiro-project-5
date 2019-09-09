@@ -14,12 +14,6 @@ body{
   background-size: cover;
   font-family: 'Arvo', serif;
 }
-.App {
-  text-align: center;
-  height: 100%;
-  width: 100%;
-}
-
 nav {
   display: flex;
   justify-content: center;
@@ -35,6 +29,7 @@ header {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
 
 header button {
@@ -101,14 +96,31 @@ button {
     margin-right: 3.5%;
 }
 
+input:active {
+  border:blue 2px solid
+}
+
+focus:active {
+  border: red solid 3px;
+}
+
 button:hover {
   border: 0.3333333333rem dashed blue;
   color: blue;
 }
 
+button:active {
+  border: 0.3333333333rem dashed blue;
+  color: blue;
+}
+
 /* gameboard */
-.App {
+.wrapper {
   height: 100vh;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  max-width: 1500px;
 }
 
 nav{
@@ -287,14 +299,18 @@ figure {
   margin: 2rem;
 }
 /* Portrait tablet and small desktops */
-@media (max-width: 940px){}
+@media (max-width: 940px){
+  figure {
+    width: 115px;
+  }
+}
 /* Landscape phone to portrait tablet */
 @media (max-width: 800px){
   h1{
     font-size: 7.5rem;
   }
   figure {
-    width: 140px;
+    width: 110px;
   }
   nav {
     font-size: 1.5rem;

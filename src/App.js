@@ -350,7 +350,6 @@ class App extends Component {
       userWon:false,
       bet:true
     })
-    this.newDeck();
   }
   }
 // keep track of user name

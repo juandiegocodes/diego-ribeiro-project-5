@@ -408,9 +408,9 @@ class App extends Component {
       dealerWon: false,
       tie:false,
       stay:false,
-      bank:500
+      bank:500,
+      bet:true
     })
-    this.newDeck();
   }
 // bet functions
   startBet =() => {

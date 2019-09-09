@@ -170,7 +170,8 @@ figure {
   justify-items: center;
   align-items: center;
   padding: 1rem;
-  justify-content: center; 
+  justify-content: center;
+  border-top: 4px dashed white;
 }
 .gameover {
   display: flex;

@@ -461,7 +461,7 @@ class App extends Component {
           <div className="gameBoard">
             <div className="globalNav">
               <div className="announcement">
-                {this.state.userWon && this.state.gameEnd && this.state.gameOver ===false && <p>User Win!</p>}
+                {this.state.userWon && this.state.gameEnd && this.state.gameOver ===false && <p>User  Win!</p>}
                 {this.state.dealerWon && this.state.gameEnd &&this.state.gameOver ===false &&<p>Dealer Win!</p>}
                 {this.state.tie && this.state.gameEnd && this.state.gameOver ===false&&<p>TIE!</p>}
               </div>

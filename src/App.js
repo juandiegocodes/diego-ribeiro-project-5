@@ -50,7 +50,9 @@ class App extends Component {
       })
       this.initialDealer(res.data.deck_id);
       this.initialUser(res.data.deck_id) 
-    });
+    }).catch(function() {
+      alert('The card API is not working at the time maybe try to go to a Real Casino:)');
+    }) ;
   }
 // This will give  1 card to the dealer
   initialDealer =(id) => {
@@ -68,7 +70,9 @@ class App extends Component {
       this.setState({
         dealerdeckValue: this.dealerFilterCard(dealerCard1)
       })
-    });
+    }).catch(function() {
+      alert('The card API is not working at the time maybe try to go to a Real Casino:)');
+    })
   }
 // this will give the initial 2 cards to the user
   initialUser =(id) => {
@@ -92,6 +96,8 @@ class App extends Component {
       if(this.state.userdeckValue ===21){
         this.stay()
       }
+    }).catch(function() {
+      alert('The card API is not working at the time maybe try to go to a Real Casino:)');
     });
   }
 // this will convert J,Q,K & A to numerial values and also will keep track of the dealer A's
@@ -160,13 +166,14 @@ class App extends Component {
           userdeckValue: this.state.userdeckValue +  userCard1
         })
         this.checkuser()
-      });
+      }).catch(function() {
+        alert('The card API is not working at the time maybe try to go to a Real Casino:)');
+      }); 
     }
   }
 // dealer request an extra card
   dealerRequestCard = (id) => {
     if (this.state.gameEnd === false) {
-      setTimeout(()=>{
       axios({
         method: 'get',
         url:`https://deckofcardsapi.com/api/deck/${id}/draw/`,
@@ -187,8 +194,9 @@ class App extends Component {
         else {
           this.checkdealer();
         }
-      })}
-      ,600)
+      }).catch(function() {
+        alert('The card API is not working at the time maybe try to go to a Real Casino:)');
+      }) 
     }
   }
 

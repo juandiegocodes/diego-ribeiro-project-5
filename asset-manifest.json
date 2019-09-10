@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/diego-ribeiro-project-5/static/css/main.d7372b39.chunk.css",
+    "main.js": "/diego-ribeiro-project-5/static/js/main.c271087a.chunk.js",
+    "main.js.map": "/diego-ribeiro-project-5/static/js/main.c271087a.chunk.js.map",
+    "runtime~main.js": "/diego-ribeiro-project-5/static/js/runtime~main.54a2ab41.js",
+    "runtime~main.js.map": "/diego-ribeiro-project-5/static/js/runtime~main.54a2ab41.js.map",
+    "static/js/2.321ec951.chunk.js": "/diego-ribeiro-project-5/static/js/2.321ec951.chunk.js",
+    "static/js/2.321ec951.chunk.js.map": "/diego-ribeiro-project-5/static/js/2.321ec951.chunk.js.map",
+    "index.html": "/diego-ribeiro-project-5/index.html",
+    "precache-manifest.9ad8601b33a8372a079bf8c1688f47db.js": "/diego-ribeiro-project-5/precache-manifest.9ad8601b33a8372a079bf8c1688f47db.js",
+    "service-worker.js": "/diego-ribeiro-project-5/service-worker.js",
+    "static/css/main.d7372b39.chunk.css.map": "/diego-ribeiro-project-5/static/css/main.d7372b39.chunk.css.map",
+    "static/media/App.css": "/diego-ribeiro-project-5/static/media/tableBackground.f60c31a7.png"
+  }
+}

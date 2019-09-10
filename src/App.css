@@ -235,7 +235,7 @@ figure {
 
 .leaderboard {
   font-size: 1.4rem;
-  text-align: left;
+  text-align: center;
   padding:  1rem 3rem 0 3rem ;
   background-color: black;
   border: 3px solid white;
@@ -357,12 +357,6 @@ figure {
   }
   figure {
     width: 80px;
-  }
-
-  button {
-    width: 4.5rem;
-    height: 2rem;
-    line-height: 0;
   }
   .gameover h2 {
     font-size: 2rem;

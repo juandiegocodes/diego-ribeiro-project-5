@@ -299,7 +299,7 @@ figure {
   margin: 2rem;
 }
 /* Portrait tablet and small desktops */
-@media (max-width: 940px){
+@media (max-width: 1000px){
   figure {
     width: 115px;
   }
